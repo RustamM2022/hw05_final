@@ -1,6 +1,7 @@
 from http import HTTPStatus
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
+from django.core.cache import cache
 
 from posts.models import Post, Group
 
@@ -34,6 +35,7 @@ class PostURLTests(TestCase):
 
     def setUp(self):
         self.authorized_client = Client()
+        cache.clear()
 
     def test_urls_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон
@@ -43,7 +45,7 @@ class PostURLTests(TestCase):
             f'/group/{self.group.slug}/': 'posts/group_list.html',
             f'/profile/{self.first_user}/': 'posts/profile.html',
             f'/posts/{PostURLTests.post.pk}/': 'posts/post_detail.html',
-            '/unexesting_page/': 'core/404.html'
+            '/nonexist-page/': 'core/404.html'
         }
         for address, template in templates_url_names.items():
             with self.subTest(address=address):

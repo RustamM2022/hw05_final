@@ -253,6 +253,7 @@ class PaginatorViewsTest(TestCase):
             )
 
     def setUp(self):
+        cache.clear()
         self.user = User.objects.create_user(username='HasNoName')
         self.authorized_client = Client()
         self.authorized_client.force_login(self.first_user)
