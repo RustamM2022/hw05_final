@@ -1,6 +1,5 @@
 import shutil
 import tempfile
-from functools import cache
 from django.core.cache import cache
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client, override_settings
