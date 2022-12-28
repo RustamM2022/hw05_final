@@ -23,15 +23,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '@9+(mxlqego-f(#fy*30s7bccx#pqmoa@v3@+0!76f&mi4s!xj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '[::1]',
     'testserver',
+    'www.rustammul.pythonanywhere.com',
+    'rustammul.pythonanywhere.com',
 ]
-
 
 # Application definition
 

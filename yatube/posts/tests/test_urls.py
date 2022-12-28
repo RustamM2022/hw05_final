@@ -97,3 +97,20 @@ class PostURLTests(TestCase):
         """URL-адрес использует неправильный адрес."""
         response = self.client.get('/unexesting_page/')
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_urls_redirect_anonim_user(self):
+        """Проверим ридирект анонимного пользователя 
+        для страницы редактирования поста."""
+        response = self.client.get(
+            f'/posts/{PostURLTests.post.pk}/edit/', follow=True)
+        self.assertRedirects(response, (
+            f'/auth/login/?next=/posts/{PostURLTests.post.pk}/edit/'))
+
+    def test_urls_redirect_authorized_user(self):
+        """Проверим ридирект авторизованного пользователя
+        для страницы редактирования поста."""
+        self.authorized_client.force_login(self.user)
+        response = self.authorized_client.get(
+            f'/posts/{PostURLTests.post.pk}/edit/', follow=True)
+        self.assertRedirects(response, (
+            f'/posts/{PostURLTests.post.pk}/'))

@@ -58,7 +58,7 @@ class PostViewsTests(TestCase):
             author=cls.first_user,
             pub_date='20.20.20 20:20',
             group=cls.group
-        ) for i in range(1, 13)
+        ) for i in range(1, 3)
         ]
         cls.post = Post.objects.create(
             text='Текст к картинке',
@@ -103,7 +103,7 @@ class PostViewsTests(TestCase):
         response = self.authorized_client.get(HOME_URL)
         posts = response.context.get('page_obj').object_list
 
-        for index in range(10, 1):
+        for index in range(3, 1):
             post = (self.posts[index])
             with self.subTest(post=post):
                 self.assertEqual(
@@ -115,7 +115,7 @@ class PostViewsTests(TestCase):
         """Выведен список постов по группам."""
         response = self.authorized_client.get(POST_GROUP_URL)
         groups = response.context['page_obj'].object_list
-        for index in range(10, 1):
+        for index in range(3, 1):
             post_group = (self.posts[index])
             with self.subTest(post_group=post_group):
                 self.assertEqual(
@@ -127,7 +127,7 @@ class PostViewsTests(TestCase):
         """Выведен список постов по пользователю."""
         response = self.authorized_client.get(PROFILE_URL)
         users_post = response.context['page_obj'].object_list[0]
-        for index in range(10, 1):
+        for index in range(3, 1):
             post_user = (self.posts[index])
             with self.subTest(post_user=post_user):
                 self.assertEqual(
@@ -189,7 +189,7 @@ class PostViewsTests(TestCase):
         for url, response in response_urls.items():
             with self.subTest(url=url):
                 post_page = response.context.get('page_obj')
-                self.assertIn(self.posts[9], post_page)
+                self.assertIn(self.posts[0], post_page)
 
     def test_cache_index(self):
         """Проверка кеширования на главной странице сайта."""
@@ -243,14 +243,14 @@ class PaginatorViewsTest(TestCase):
             slug='test-slug',
             description='описание'
         )
-
-        for i in range(1, 14):
-            cls.post = Post.objects.create(
-                text=f'Тестовый пост номер {i}',
-                author=cls.first_user,
-                pub_date='10.10.10 10:10',
-                group=cls.group
-            )
+        post = Post(
+            text='Тестовый пост',
+            author=cls.first_user,
+            pub_date='10.10.10 10:10',
+            group=cls.group
+        )
+        posts = (post for i in range(1, 14))
+        Post.objects.bulk_create(posts)
 
     def setUp(self):
         cache.clear()

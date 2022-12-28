@@ -6,8 +6,6 @@ from django.views.decorators.cache import cache_page
 from .forms import PostForm, CommentForm
 from .models import Follow, Group, Post, User, Comment
 
-POSTS_PER_PAGE = 10
-
 
 @cache_page(20, key_prefix='index_page')
 def index(request):
@@ -32,8 +30,8 @@ def profile(request, username):
         user=request.user, author=author
     ).exists()
     context = {
-        "author": author,
-        "posts_count": posts_count,
+        'author': author,
+        'posts_count': posts_count,
         'following': following
     }
     context.update(get_page_context(author.posts.all(), request))
@@ -43,13 +41,11 @@ def profile(request, username):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     form = CommentForm(request.POST or None)
-    author_post = post.author.posts.count()
     comments = Comment.objects.filter(post=post)
     context = {
-        "post": post,
-        "author_post": author_post,
-        "comments": comments,
-        "form": form
+        'post': post,
+        'comments': comments,
+        'form': form
     }
     return render(request, 'posts/post_detail.html', context)
 
@@ -77,7 +73,7 @@ def post_edit(request, post_id):
         request.POST or None,
         files=request.FILES or None,
         instance=post)
-    if request.method == 'POST' and form.is_valid():
+    if form.is_valid():
         form.save()
         return redirect('posts:post_detail', post_id)
     context = {
@@ -102,10 +98,7 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
-    user = request.user
-    follows = user.follower.all()
-    authors = [follow.author for follow in follows]
-    posts = Post.objects.filter(author__in=authors)
+    posts = Post.objects.filter(author__following__user=request.user)
     context = get_page_context(posts, request)
     return render(request, 'posts/follow.html', context)
 
@@ -113,12 +106,10 @@ def follow_index(request):
 @login_required
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
-    follow_count = Follow.objects.all().filter(
-        user=request.user, author=author).count()
-    if request.user != author and follow_count < 1:
-        Follow.objects.create(user=request.user, author=author)
+    if request.user != author:
+        Follow.objects.get_or_create(user=request.user, author=author),
         return redirect('posts:profile', username=username)
-    return render(request, 'core/403.html', status=403)
+    return redirect('posts:profile', username=username)
 
 
 @login_required
