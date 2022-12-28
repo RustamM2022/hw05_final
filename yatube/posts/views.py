@@ -25,13 +25,11 @@ def group_list(request, slug):
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
-    posts_count = Post.objects.all().filter(author=author).count()
     following = request.user.is_authenticated and Follow.objects.filter(
         user=request.user, author=author
     ).exists()
     context = {
         'author': author,
-        'posts_count': posts_count,
         'following': following
     }
     context.update(get_page_context(author.posts.all(), request))
@@ -107,8 +105,7 @@ def follow_index(request):
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
     if request.user != author:
-        Follow.objects.get_or_create(user=request.user, author=author),
-        return redirect('posts:profile', username=username)
+        Follow.objects.get_or_create(user=request.user, author=author)
     return redirect('posts:profile', username=username)
 
 
