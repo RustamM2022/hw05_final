@@ -99,7 +99,7 @@ class PostURLTests(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_urls_redirect_anonim_user(self):
-        """Проверим ридирект анонимного пользователя 
+        """Проверим ридирект анонимного пользователя
         для страницы редактирования поста."""
         response = self.client.get(
             f'/posts/{PostURLTests.post.pk}/edit/', follow=True)
